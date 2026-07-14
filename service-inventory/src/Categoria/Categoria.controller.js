@@ -1,6 +1,6 @@
 import Categoria from './Categoria.model.js'
 
-
+// Todas las categorias
 export const getCategorias = async (req, res) => {
     try {
         const categorias = await Categoria.find();
@@ -10,7 +10,7 @@ export const getCategorias = async (req, res) => {
     }
 }
 
-
+// Buscar categoria por ID
 export const getCategoria = async (req, res) => {
     try {
         const categoria = await Categoria.findById(req.params.id);
@@ -20,7 +20,7 @@ export const getCategoria = async (req, res) => {
     }
 }
 
-
+// Crear categoria
 export const createCategoria = async (req, res) => {
     try {
         const { nombre, descripcion } = req.body;
@@ -32,7 +32,7 @@ export const createCategoria = async (req, res) => {
     }
 }
 
-
+// Actualizar categoria
 export const updateCategoria = async (req, res) => {
     try {
         const categoria = await Categoria.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -42,12 +42,22 @@ export const updateCategoria = async (req, res) => {
     }
 }
 
-
+// Desactivar categoria
 export const desactivarCategoria = async (req, res) => {
     try {
         const categoria = await Categoria.findByIdAndUpdate(req.params.id, { estado: false }, { new: true });
         return res.status(200).json({ message: 'Categoria desactivada', categoria });
     } catch (error) {
         return res.status(500).json({ message: 'Error al desactivar categoria', error });
+    }
+}
+
+// Activar categoria
+export const activarCategoria = async (req, res) => {
+    try {
+        const categoria = await Categoria.findByIdAndUpdate(req.params.id, { estado: true }, { new: true });
+        return res.status(200).json({ message: 'Categoria activada', categoria });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error al activar categoria', error });
     }
 }
