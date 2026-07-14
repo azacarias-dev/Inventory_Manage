@@ -24,3 +24,10 @@
 [2026-07-14 10:55:00 INF] Email processed {"SourceContext":"AuthService.Application.Services.EmailService","ActionId":"e9d084bd-50ae-4ddf-8bd5-a3f02042d16a","ActionName":"AuthService.Api.Controllers.AuthController.VerifyEmail (AuthService.Api)","RequestId":"0HNN1P2HI1O8O:00000001","RequestPath":"/api/v1/Auth/verify-email","ConnectionId":"0HNN1P2HI1O8O"}
 [2026-07-14 10:55:00 INF] Email verified successfully for user Miguel {"SourceContext":"AuthService.Application.Services.AuthService","ActionId":"e9d084bd-50ae-4ddf-8bd5-a3f02042d16a","ActionName":"AuthService.Api.Controllers.AuthController.VerifyEmail (AuthService.Api)","RequestId":"0HNN1P2HI1O8O:00000001","RequestPath":"/api/v1/Auth/verify-email","ConnectionId":"0HNN1P2HI1O8O"}
 [2026-07-14 10:55:00 INF] HTTP POST /api/v1/Auth/verify-email responded 200 in 2334.3000 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNN1P2HI1O8O:00000001","ConnectionId":"0HNN1P2HI1O8O"}
+[2026-07-14 10:57:00 INF] Checking database connection... {"SourceContext":"Program"}
+[2026-07-14 10:57:01 INF] Database ready. Running seed data... {"SourceContext":"Program"}
+[2026-07-14 10:57:01 INF] Database initialization completed successfully {"SourceContext":"Program"}
+[2026-07-14 10:57:01 INF] AuthService API is running at http://localhost:5052. Health endpoint: http://localhost:5052/health {"SourceContext":"Program"}
+[2026-07-14 10:57:03 WRN] Failed to determine the https port for redirect. {"EventId":{"Id":3,"Name":"FailedToDeterminePort"},"SourceContext":"Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware","RequestId":"0HNN1P3MVHF20:00000001","RequestPath":"/api/v1/Users/users","ConnectionId":"0HNN1P3MVHF20"}
+[2026-07-14 10:57:04 INF] HTTP GET /api/v1/Users/users responded 200 in 404.9396 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNN1P3MVHF20:00000001","ConnectionId":"0HNN1P3MVHF20"}
+[2026-07-14 10:57:45 INF] HTTP GET /api/v1/Users/admins responded 200 in 61.8248 ms {"SourceContext":"Serilog.AspNetCore.RequestLoggingMiddleware","RequestId":"0HNN1P3MVHF20:00000002","ConnectionId":"0HNN1P3MVHF20"}
