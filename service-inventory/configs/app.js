@@ -6,8 +6,8 @@ import morgan from 'morgan';
 import { corsOptions } from './cors-configuration.js';
 import { dbConnection } from './db.js';
 import categoriasRoutes from '../src/Categoria/Categoria.router.js';
-// import productosRoutes from '../src/Productos/Productos.router.js';
-// import movimientosRoutes from '../src/MovimientosInventario/MovimientosInventario.router.js';
+import productosRoutes from '../src/Productos/Productos.router.js';
+import movimientosRoutes from '../src/MovimientosInventario/MovimientosInventario.router.js';
 const BASE_URL = '/service-inventory/v1/inventory';
 
 const middlewares = (app) => {
@@ -19,8 +19,8 @@ const middlewares = (app) => {
 
 const routes = (app) => {
     app.use(`${BASE_URL}/categorias`, categoriasRoutes);
-    // app.use(`${BASE_URL}/productos`, productosRoutes);
-    // app.use(`${BASE_URL}/movimientosInventario`, movimientosRoutes);
+    app.use(`${BASE_URL}/productos`, productosRoutes);
+    app.use(`${BASE_URL}/movimientosInventario`, movimientosRoutes);
 }
 
 const initServer = async (app) => {
