@@ -93,4 +93,68 @@ export const getMovimientosPorTipo = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: 'Error al buscar movimientos de inventario', error });
     }
+};
+
+// Desactivar movimiento de inventario
+
+export const desactivarMovimientoInventario = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // 1. Buscamos el movimiento de inventario por su ID
+        const movimiento = await MovimientosInventario.findById(id);
+
+        if (!movimiento) {
+            return res.status(404).json({ message: 'No se encontró el movimiento de inventario' });
+        }
+
+        // 2. Si ya está en false (desactivado), evitamos que se vuelva a alterar el stock
+        if (movimiento.estado === false) {
+            return res.status(400).json({ message: 'Este movimiento ya se encuentra desactivado' });
+        }
+
+        const { producto, cantidad, tipo } = movimiento;
+
+        // 3. Calculamos la reversión del stock
+        let cambioStock = 0;
+
+        if (tipo === 'Salida') {
+            // Si es salida y se cancela: devolvemos/reintegramos las unidades (SUMA)
+            cambioStock = cantidad;
+        } else if (tipo === 'Ingreso' || tipo === 'Entrada') {
+            // Si es entrada y se cancela: retiramos las unidades que entraron (RESTA)
+            cambioStock = -cantidad;
+        }
+
+        // 4. Buscamos el producto para verificar que exista y validar el stock
+        const productoEncontrado = await Producto.findById(producto);
+        if (!productoEncontrado) {
+            return res.status(404).json({ message: 'El producto asociado a este movimiento ya no existe' });
+        }
+
+        // Validación: Evitamos que el stock quede en negativo si restamos un ingreso cancelado
+        if (productoEncontrado.stock + cambioStock < 0) {
+            return res.status(400).json({
+                message: `No se puede cancelar el ingreso. El stock actual es de ${productoEncontrado.stock} y necesitas retirar ${cantidad} unidades.`
+            });
+        }
+
+        // 5. Actualizamos el stock del producto aplicando la SUMA o RESTA correspondiente
+        await Producto.findByIdAndUpdate(producto, { $inc: { stock: cambioStock } });
+
+        // 6. Cambiamos el estado del movimiento a false (Hacemos el PUT)
+        const movimientoDesactivado = await MovimientosInventario.findByIdAndUpdate(
+            id,
+            { estado: false },
+            { new: true } // Para retornar el movimiento ya modificado
+        );
+
+        return res.status(200).json({
+            message: 'Movimiento cancelado con éxito. Se cambió el estado a false y se actualizó el stock del producto.',
+            movimiento: movimientoDesactivado
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Error al desactivar el movimiento de inventario', error: error.message });
+    }
 }
