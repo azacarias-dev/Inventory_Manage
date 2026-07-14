@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function RegisterForm() {
+export default function RegisterForm({ onSwitchToLogin }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [fullName, setFullName] = useState('');
@@ -16,9 +16,10 @@ export default function RegisterForm() {
   const handleFocus = (field) => setFocusedField(field);
   const handleBlur = (field, value) => {
     setFocusedField('');
-    // Validación visual básica al perder foco para dar feedback dinámico
     if (!value) {
       setErrors(prev => ({ ...prev, [field]: 'Este campo es requerido' }));
+    } else if (field === 'email' && !value.includes('@')) {
+      setErrors(prev => ({ ...prev, [field]: 'Debe ingresar un correo válido (debe incluir "@")' }));
     } else {
       setErrors(prev => ({ ...prev, [field]: null }));
     }
@@ -193,7 +194,7 @@ export default function RegisterForm() {
 
       {/* Enlace a Login */}
       <div className="auth-footer">
-        <p>¿Ya tienes una cuenta? <a href="#login" className="auth-link font-semibold">Inicia sesión aquí</a></p>
+        <p>¿Ya tienes una cuenta? <button type="button" onClick={onSwitchToLogin} className="auth-link font-semibold bg-transparent border-none p-0 cursor-pointer">Inicia sesión aquí</button></p>
       </div>
     </div>
   );

@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import RegisterForm from '../components/RegisterForm';
+import LoginForm from '../components/LoginForm';
 import logoImg from '../../../assets/img/Logo.png';
 
 export default function AuthPage() {
+  const [isLogin, setIsLogin] = useState(true);
+
   return (
     <div className="auth-page-container">
       {/* Panel Izquierdo: Información Corporativa / Branding */}
@@ -61,13 +64,17 @@ export default function AuthPage() {
         </div>
       </div>
 
-      {/* Panel Derecho: Formulario de Registro */}
+      {/* Panel Derecho: Formulario */}
       <div className="auth-form-panel">
         <div className="form-container-wrapper">
           <div className="auth-logo-top">
             <img src={logoImg} className="main-logo" alt="Logo de la Empresa" />
           </div>
-          <RegisterForm />
+          {isLogin ? (
+            <LoginForm onSwitchToRegister={() => setIsLogin(false)} />
+          ) : (
+            <RegisterForm onSwitchToLogin={() => setIsLogin(true)} />
+          )}
         </div>
       </div>
     </div>
