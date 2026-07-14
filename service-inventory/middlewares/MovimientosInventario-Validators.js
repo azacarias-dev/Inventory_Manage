@@ -7,3 +7,4 @@ export const validateCreateMovimientosInventario = [
     body('cantidad').notEmpty().withMessage('La cantidad es requerida').isNumeric().withMessage('La cantidad debe ser un numero'),
     body('razon').notEmpty().withMessage('La razon es requerida'),
 ];
+
