@@ -50,15 +50,9 @@ public class AuthService(
         var user = new User
         {
             Id = userId,
-            Name = registerDto.Name,
+            Username = registerDto.UserName,
             Email = registerDto.Email.ToLowerInvariant(),
-            Address = registerDto.Address,
-            Phone = registerDto.Phone,
             Password = passwordHashService.HashPassword(registerDto.Password),
-            Dpi = registerDto.Dpi,
-            JobName = registerDto.JobName,
-            MonthlyIncome = registerDto.MonthlyIncome,
-            Birthdate = registerDto.Birthdate,
             IsActive = false,
             UserEmail = new UserEmail
             {
@@ -68,7 +62,7 @@ public class AuthService(
                 EmailVerificationToken = emailVerificationToken,
                 EmailVerificationTokenExpiry = DateTime.UtcNow.AddHours(24)
             },
-            UserRoles =
+            UserRole =
             [
                 new Domain.Entities.UserRole
                 {
@@ -82,7 +76,7 @@ public class AuthService(
         // Guardar usuario y entidades relacionadas
         var createdUser = await userRepository.CreateAsync(user);
 
-        logger.LogUserRegistered(createdUser.Name);
+        logger.LogUserRegistered(createdUser.Username);
 
         // Enviar email de verificación en background
         _ = Task.Run(async () =>
