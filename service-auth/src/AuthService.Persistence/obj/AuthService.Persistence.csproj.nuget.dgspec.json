@@ -82,6 +82,10 @@
             "MimeKit": {
               "target": "Package",
               "version": "[4.15.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.16.0, )"
             }
           },
           "imports": [

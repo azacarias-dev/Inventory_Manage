@@ -1,0 +1,6 @@
+C:\Users\Informatica\Documents\2024007\Inventory_Manage\service-auth\src\AuthService.Application\obj\Debug\net8.0\AuthService.Application.csproj.AssemblyReference.cache
+C:\Users\Informatica\Documents\2024007\Inventory_Manage\service-auth\src\AuthService.Application\obj\Debug\net8.0\AuthService.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Informatica\Documents\2024007\Inventory_Manage\service-auth\src\AuthService.Application\obj\Debug\net8.0\AuthService.Application.AssemblyInfoInputs.cache
+C:\Users\Informatica\Documents\2024007\Inventory_Manage\service-auth\src\AuthService.Application\obj\Debug\net8.0\AuthService.Application.AssemblyInfo.cs
+C:\Users\Informatica\Documents\2024007\Inventory_Manage\service-auth\src\AuthService.Application\obj\Debug\net8.0\AuthService.Application.csproj.CoreCompileInputs.cache
+C:\Users\Informatica\Documents\2024007\Inventory_Manage\service-auth\src\AuthService.Application\obj\Debug\net8.0\AuthService.Application.sourcelink.json
