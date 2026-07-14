@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AuthService.Api</name>
+    </assembly>
+    <members>
+        <member name="T:AuthService.Api.Controllers.AuthController">
+            <summary>
+            Controlador de autenticacion y gestion de usuarios para el sistema bancario Ban-K.
+            </summary>
+        </member>
+        <member name="M:AuthService.Api.Controllers.AuthController.#ctor(AuthService.Application.Interfaces.IAuthService)">
+            <summary>
+            Controlador de autenticacion y gestion de usuarios para el sistema bancario Ban-K.
+            </summary>
+        </member>
+        <member name="M:AuthService.Api.Controllers.AuthController.GetProfile">
+            <summary>
+            Obtiene el perfil del usuario autenticado actualmente.
+            </summary>
+            <response code="200">Retorna los datos del perfil del usuario.</response>
+            <response code="401">Si el token no es valido o ha expirado.</response>
+            <response code="404">Si el usuario no existe en el sistema.</response>
+        </member>
+        <member name="M:AuthService.Api.Controllers.AuthController.GetProfileById(System.String)">
+            <summary>
+            Obtiene el perfil de un usuario especifico por su ID.
+            </summary>
+            <remarks>
+            Solo accesible por el propio usuario o por un administrador.
+            </remarks>
+            <param name="id">ID unico del usuario a consultar.</param>
+            <response code="200">Retorna los datos del perfil solicitado.</response>
+            <response code="403">Si el usuario intenta acceder a un perfil ajeno sin ser Admin.</response>
+            <response code="404">Si el usuario no fue encontrado.</response>
+        </member>
+        <member name="M:AuthService.Api.Controllers.AuthController.Register(AuthService.Application.DTOs.RegisterDto)">
+            <summary>
+            Registra un nuevo usuario en la plataforma Ban-K.
+            </summary>
+            <remarks>
+            Campos requeridos:
+            - **Name**: Nombre completo (max 25)
+            - **Email**: Correo electronico institucional
+            - **Password**: Minimo 8 caracteres
+            - **Dpi**: 13-20 digitos
+            - **MonthlyIncome**: Ingresos mensuales (decimal)
+            </remarks>
+            <param name="registerDto">Informacion necesaria para el registro.</param>
+            <response code="201">Usuario creado correctamente.</response>
+        </member>
+        <member name="M:AuthService.Api.Controllers.AuthController.Login(AuthService.Application.DTOs.LoginDto)">
+            <summary>
+            Inicia sesion y genera un token de acceso bancario.
+            </summary>
+            <remarks>
+            Requiere Email/Username y Password validos.
+            </remarks>
+            <param name="loginDto">Credenciales de acceso.</param>
+            <response code="200">Autenticacion exitosa.</response>
+        </member>
+        <member name="M:AuthService.Api.Controllers.AuthController.VerifyEmail(AuthService.Application.DTOs.Email.VerifyEmailDto)">
+            <summary>
+            Verifica la direccion de correo electronico mediante un token.
+            </summary>
+            <remarks>
+            El token es el codigo de 6-8 caracteres enviado por correo.
+            </remarks>
+        </member>
+        <member name="T:AuthService.Api.Controllers.EmailTestController">
+            <summary>
+            Controlador de pruebas para verificar la conectividad del servicio de correo.
+            </summary>
+        </member>
+        <member name="M:AuthService.Api.Controllers.EmailTestController.TestWelcome(System.String,System.String)">
+            <summary>
+            Envia un correo de bienvenida de prueba.
+            </summary>
+            <remarks>
+            Utilice este endpoint para confirmar que las credenciales SMTP en appsettings son correctas.
+            </remarks>
+            <param name="email">Direccion de correo electronico del destinatario.</param>
+            <param name="name">Nombre que aparecera en el cuerpo del mensaje.</param>
+            <response code="200">El correo ha sido enviado exitosamente.</response>
+            <response code="500">Error interno al intentar conectar con el servidor de correo.</response>
+        </member>
+        <member name="M:AuthService.Api.Controllers.UsersController.GetAdmins">
+            <summary>
+            Obtiene la lista de todos los administradores registrados.
+            </summary>
+            <response code="200">Lista de administradores obtenida exitosamente.</response>
+        </member>
+        <member name="M:AuthService.Api.Controllers.UsersController.GetUsuarios">
+            <summary>
+            Obtiene la lista de todos los usuarios registrados.
+            </summary>
+            <response code="200">Lista de usuarios obtenida exitosamente.</response>
+        </member>
+    </members>
+</doc>
