@@ -39,7 +39,7 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
         .Include(u => u.UserEmail)
         .Include(u => u.UserRole)
         .ThenInclude(ur => ur.Role)
-        .FirstOrDefaultAsync(u => EF.Functions.Like(u.Name, name));
+        .FirstOrDefaultAsync(u => EF.Functions.Like(u.Username, name));
     }
 
     public async Task<User?> GetByEmailVerificationTokenAsync(string token)
@@ -51,15 +51,6 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
         .FirstOrDefaultAsync(u => u.UserEmail != null && u.UserEmail.EmailVerificationToken == token);
     }
 
-    public async Task<User?> GetByPasswordResetTokenAsync(string token)
-    {
-        return await context.Users
-        .Include(u => u.UserEmail)
-        .Include(u => u.UserRole)
-        .ThenInclude(ur => ur.Role)
-        .FirstOrDefaultAsync(u => u.UserPasswordReset != null && u.UserPasswordReset.PasswordResetToken == token);
-    }
-
     public async Task<bool> ExistsByEmailAsync(string email)
     {
         return await context.Users.AnyAsync(u => EF.Functions.Like(u.Email, email));
@@ -67,7 +58,7 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
 
     public async Task<bool> ExistsByNameAsync(string name)
     {
-        return await context.Users.AnyAsync(u => EF.Functions.Like(u.Name, name));
+        return await context.Users.AnyAsync(u => EF.Functions.Like(u.Username, name));
     }
 
     public async Task<User> UpdateAsync(User user)
@@ -87,7 +78,7 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
     public async Task UpdateUserRoleAsync(string userId, string roleId)
     {
         var existingRoles = await context.UserRole.Where(ur => ur.UserId == userId).ToListAsync();
-        context.UserRoles.RemoveRange(existingRoles);
+        context.UserRole.RemoveRange(existingRoles);
 
         var newUserRole = new UserRole
         {
@@ -97,7 +88,7 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
         };
-        context.UserRoles.Add(newUserRole);
+        context.UserRole.Add(newUserRole);
         await context.SaveChangesAsync();
     }
 }
