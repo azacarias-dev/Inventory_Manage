@@ -3,7 +3,7 @@ import RegisterForm from '../components/RegisterForm';
 import LoginForm from '../components/LoginForm';
 import logoImg from '../../../assets/img/Logo.png';
 
-export default function AuthPage() {
+export default function AuthPage({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
@@ -71,9 +71,9 @@ export default function AuthPage() {
             <img src={logoImg} className="main-logo" alt="Logo de la Empresa" />
           </div>
           {isLogin ? (
-            <LoginForm onSwitchToRegister={() => setIsLogin(false)} />
+            <LoginForm onSwitchToRegister={() => setIsLogin(false)} onLogin={onLogin} />
           ) : (
-            <RegisterForm onSwitchToLogin={() => setIsLogin(true)} />
+            <RegisterForm onSwitchToLogin={() => setIsLogin(true)} onLogin={onLogin} />
           )}
         </div>
       </div>
