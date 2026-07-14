@@ -14,6 +14,7 @@ const movimientosInventarioSchema = mongoose.Schema({
     },
     tipo: {
         type: String,
+        enum: ['INGRESO', 'SALIDA'],
         required: true
     },
     razon: {
