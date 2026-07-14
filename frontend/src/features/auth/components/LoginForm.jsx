@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
+import { useAuthStore } from '../store/authStore';
 
-export default function LoginForm({ onSwitchToRegister }) {
+export default function LoginForm({ onSwitchToRegister, onLogin }) {
   const [showPassword, setShowPassword] = useState(false);
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const login = useAuthStore((state) => state.login);
+  const error = useAuthStore((state) => state.error);
+  const loading = useAuthStore((state) => state.loading);
 
   // Estados visuales de interacción (para que se sienta vivo y premium)
   const [focusedField, setFocusedField] = useState('');
@@ -21,9 +26,12 @@ export default function LoginForm({ onSwitchToRegister }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí iría la lógica de login real
+    const result = await login(emailOrUsername, password);
+    if (result.success && onLogin) {
+      onLogin();
+    }
   };
 
   return (
@@ -101,9 +109,15 @@ export default function LoginForm({ onSwitchToRegister }) {
         </div>
 
 
+        {error && (
+          <div className="alert-message error-bg" style={{ marginBottom: '1.25rem', color: '#ffffff' }}>
+            ⚠️ {error}
+          </div>
+        )}
+
         {/* Botón de Enviar */}
-        <button type="submit" className="auth-btn btn-primary">
-          Validar Credenciales
+        <button type="submit" className="auth-btn btn-primary" disabled={loading}>
+          {loading ? 'Validando...' : 'Validar Credenciales'}
         </button>
       </form>
 
