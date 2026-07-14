@@ -1,36 +1,41 @@
 'use strict';
 
 import axios from 'axios';
+import { getMockProducts } from '../../configs/mockService.js';
 
-const SERVICE_A_URL = 'http://localhost:3001/api/v1';
+const SERVICE_A_URL = 'http://localhost:3002/api/v1'; // Puerto de service-inventory
+
+const getProductsFromServiceA = async (token) => {
+    if (process.env.NODE_ENV === 'development') {
+        try {
+            const response = await axios.get(`${SERVICE_A_URL}/products`, {
+                headers: { Authorization: `Bearer ${token}` },
+                timeout: 2000
+            });
+            return response.data.productos || [];
+        } catch (error) {
+            console.log('⚠️  Servicio A no disponible, usando datos mock...');
+            return getMockProducts();
+        }
+    } else {
+        const response = await axios.get(`${SERVICE_A_URL}/products`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data.productos || [];
+    }
+};
 
 export const getLowStockAlerts = async (req, res) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
-
-        const response = await axios.get(`${SERVICE_A_URL}/products`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        const products = response.data.productos || [];
+        const products = await getProductsFromServiceA(token);
 
         const lowStockProducts = products.filter(product => product.existencia <= 5);
 
-        if (lowStockProducts.length === 0) {
-            return res.status(200).json({
-                success: true,
-                message: 'No hay productos con bajo inventario',
-                alerts: []
-            });
-        }
-
-        // Procesar y retornar las alertas
         const alerts = lowStockProducts.map(product => ({
             productId: product._id,
             name: product.nombre,
-            category: product.categoría,
+            category: product.categoria,
             currentStock: product.existencia,
             price: product.precio,
             alertLevel: 'LOW_STOCK',
@@ -45,12 +50,9 @@ export const getLowStockAlerts = async (req, res) => {
 
     } catch (error) {
         console.error('Error en getLowStockAlerts:', error.message);
-        
+
         if (error.response?.status === 401) {
-            return res.status(401).json({
-                success: false,
-                message: 'Token inválido o expirado'
-            });
+            return res.status(401).json({ success: false, message: 'Token inválido o expirado' });
         }
 
         res.status(500).json({
@@ -63,49 +65,15 @@ export const getLowStockAlerts = async (req, res) => {
 
 export const getOutOfStockAlerts = async (req, res) => {
     try {
-        let products = [];
+        const token = req.headers.authorization?.split(' ')[1];
+        const products = await getProductsFromServiceA(token);
 
-        // Si estamos en desarrollo y el Servicio A no está disponible, usar mock
-        if (process.env.NODE_ENV === 'development') {
-            try {
-                const token = req.headers.authorization?.split(' ')[1];
-                const response = await axios.get(`${SERVICE_A_URL}/products`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    },
-                    timeout: 2000
-                });
-                products = response.data.productos || [];
-            } catch (error) {
-                console.log('⚠️  Servicio A no disponible, usando datos mock...');
-                products = getMockProducts();
-            }
-        } else {
-            const token = req.headers.authorization?.split(' ')[1];
-            const response = await axios.get(`${SERVICE_A_URL}/products`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            products = response.data.productos || [];
-        }
-
-        // Filtrar productos agotados (existencia === 0)
         const outOfStockProducts = products.filter(product => product.existencia === 0);
 
-        if (outOfStockProducts.length === 0) {
-            return res.status(200).json({
-                success: true,
-                message: 'No hay productos agotados',
-                alerts: []
-            });
-        }
-
-        // Procesar y retornar las alertas
         const alerts = outOfStockProducts.map(product => ({
             productId: product._id,
             name: product.nombre,
-            category: product.categoría,
+            category: product.categoria,
             currentStock: product.existencia,
             price: product.precio,
             alertLevel: 'OUT_OF_STOCK',
@@ -120,12 +88,9 @@ export const getOutOfStockAlerts = async (req, res) => {
 
     } catch (error) {
         console.error('Error en getOutOfStockAlerts:', error.message);
-        
+
         if (error.response?.status === 401) {
-            return res.status(401).json({
-                success: false,
-                message: 'Token inválido o expirado'
-            });
+            return res.status(401).json({ success: false, message: 'Token inválido o expirado' });
         }
 
         res.status(500).json({

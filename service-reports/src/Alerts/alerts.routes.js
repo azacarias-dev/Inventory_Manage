@@ -2,7 +2,7 @@
 
 import { Router } from 'express';
 import { getLowStockAlerts, getOutOfStockAlerts } from './alerts.controller.js';
-import { validateJWT } from '../middleware/validateJWT.js';
+import { validateJWT } from '../../middleware/validateJWT.js';
 
 const router = Router();
 

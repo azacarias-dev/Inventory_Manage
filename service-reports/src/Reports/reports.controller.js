@@ -1,7 +1,7 @@
 'use strict';
 
 import axios from 'axios';
-import { getMockProducts } from '../config/mockService.js';
+import { getMockProducts } from '../../configs/mockService.js';
 
 // URL del Servicio A
 const SERVICE_A_URL = 'http://localhost:3002/api/v1';
@@ -139,14 +139,14 @@ export const getCategoriesSummary = async (req, res) => {
             if (categoriesMap.has(categoryId)) {
                 const cat = categoriesMap.get(categoryId);
                 cat.productCount += 1;
-                cat.totalStock += producto.stock;
-                cat.totalValue += producto.precio * producto.stock;
+                cat.totalStock += producto.existencia;              // ← corregido
+                cat.totalValue += producto.precio * producto.existencia; // ← corregido
             } else {
                 categoriesMap.set(categoryId, {
                     categoryId,
                     productCount: 1,
-                    totalStock: producto.stock,
-                    totalValue: producto.precio * producto.stock
+                    totalStock: producto.existencia,                 // ← corregido
+                    totalValue: producto.precio * producto.existencia // ← corregido
                 });
             }
         });
@@ -198,10 +198,10 @@ export const getInventorySummary = async (req, res) => {
 
         // Calcular estadísticas
         const totalProducts = productos.length;
-        const totalStock = productos.reduce((sum, p) => sum + p.stock, 0);
-        const outOfStock = productos.filter(p => p.stock === 0).length;
+        const totalStock = productos.reduce((sum, p) => sum + p.existencia, 0);
+        const outOfStock = productos.filter(p => p.existencia === 0).length;
         const availableProducts = totalProducts - outOfStock;
-        const totalInventoryValue = productos.reduce((sum, p) => sum + (p.precio * p.stock), 0);
+        const totalInventoryValue = productos.reduce((sum, p) => sum + (p.precio * p.existencia), 0);
         
         const totalMovements = movimientos.length;
         const totalInflows = movimientos
