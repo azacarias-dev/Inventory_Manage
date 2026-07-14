@@ -1,4 +1,4 @@
-import { body, param } from 'express-validator';
+import { body, param, query } from 'express-validator';
 
 export const validateCreateProducto = [
     body('nombreProducto').notEmpty().withMessage('El nombre del producto es requerido'),
@@ -21,4 +21,9 @@ export const validateUpdateProducto = [
 
 export const validateDeleteProducto = [
     param('id').notEmpty().withMessage('El id del producto es requerido'),
+]
+
+export const validateSearchProducto = [
+    query('categoria').optional().isLength({ min: 1 }).withMessage('La categoria del producto debe tener al menos 1 caracter'),
+    query('nombre').optional().isLength({ min: 1 }).withMessage('El nombre del producto debe tener al menos 1 caracter'),
 ]
