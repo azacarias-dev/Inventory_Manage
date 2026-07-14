@@ -24,4 +24,8 @@ public class User
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public bool IsActive { get; set; } = true;
+
+    public ICollection<UserRole> UserRole { get; set; } = [];
+
+    public UserEmail UserEmail { get; set; } = null!;
 }
