@@ -1,58 +1,58 @@
-# Auth Service - Inventory Manage Microservice
+# Servicio de Autenticación - Microservicio Inventory Manage
 
-This microservice handles user authentication, registration, profile management, and role-based authorization for the Inventory Manage ecosystem.
+Este microservicio maneja la autenticación de usuarios, registro, gestión de perfiles y autorización basada en roles para el ecosistema de Inventory Manage.
 
-## 🚀 Technologies Used
+## 🚀 Tecnologías Utilizadas
 * **Framework:** .NET 8 (ASP.NET Core Web API)
-* **Architecture:** Clean Architecture (Api, Application, Domain, Persistence)
-* **Language:** C#
-* **Authentication:** JWT (JSON Web Tokens)
-* **API Documentation:** Swagger/OpenAPI
+* **Arquitectura:** Arquitectura Limpia (Clean Architecture: Api, Application, Domain, Persistence)
+* **Lenguaje:** C#
+* **Autenticación:** JWT (JSON Web Tokens)
+* **Documentación de API:** Swagger/OpenAPI
 
-## 📦 Project Structure
-The project follows a Clean Architecture approach:
-* `AuthService.Api`: Entry point, Controllers, and dependency injection setup.
-* `AuthService.Application`: Business logic, use cases, interfaces, and DTOs.
-* `AuthService.Domain`: Core domain entities and rules.
-* `AuthService.Persistence`: Database context, migrations, and repository implementations.
+## 📦 Estructura del Proyecto
+El proyecto sigue el enfoque de Arquitectura Limpia (Clean Architecture):
+* `AuthService.Api`: Punto de entrada, Controladores y configuración de inyección de dependencias.
+* `AuthService.Application`: Lógica de negocio, casos de uso, interfaces y DTOs.
+* `AuthService.Domain`: Reglas y entidades centrales del dominio.
+* `AuthService.Persistence`: Contexto de base de datos, migraciones e implementaciones de repositorios.
 
-## 🔌 API Endpoints
+## 🔌 Endpoints de la API
 
-### Auth `api/v1/auth`
-* `POST /api/v1/auth/register`: Register a new user.
-* `POST /api/v1/auth/login`: Authenticate a user and receive a JWT.
-* `POST /api/v1/auth/verify-email`: Verify a user's email address.
-* `GET /api/v1/auth/profile`: Get the profile of the currently authenticated user.
-* `GET /api/v1/auth/profile/{id}`: Get the profile of a specific user by ID.
+### Autenticación `api/v1/auth`
+* `POST /api/v1/auth/register`: Registra un nuevo usuario.
+* `POST /api/v1/auth/login`: Autentica un usuario y recibe un JWT.
+* `POST /api/v1/auth/verify-email`: Verifica la dirección de correo electrónico de un usuario.
+* `GET /api/v1/auth/profile`: Obtiene el perfil del usuario autenticado actualmente.
+* `GET /api/v1/auth/profile/{id}`: Obtiene el perfil de un usuario específico por su ID.
 
-### Management `api/v1/management`
-* `GET /api/v1/management/admins`: Retrieve a list of admin users.
-* `GET /api/v1/management/users`: Retrieve a list of regular users.
+### Gestión `api/v1/management`
+* `GET /api/v1/management/admins`: Obtiene una lista de usuarios administradores.
+* `GET /api/v1/management/users`: Obtiene una lista de usuarios regulares.
 
-### Email Test `api/emailtest`
-* `POST /api/emailtest/send-welcome`: Send a welcome test email.
+### Prueba de Correo `api/emailtest`
+* `POST /api/emailtest/send-welcome`: Envía un correo de prueba de bienvenida.
 
-## 🏃 How to Run Locally
+## 🏃 Cómo Ejecutarlo Localmente
 
-1. **Navigate to the service directory:**
+1. **Navega al directorio del servicio:**
    ```bash
    cd service-auth
    ```
-2. **Restore dependencies:**
+2. **Restaura las dependencias:**
    ```bash
    dotnet restore
    ```
-3. **Set up configurations:**
-   Ensure your `appsettings.Development.json` has the correct database connection strings and JWT secret keys.
-4. **Apply Database Migrations (if applicable):**
+3. **Configura las variables de entorno:**
+   Asegúrate de que tu archivo `appsettings.Development.json` tenga las cadenas de conexión a la base de datos correctas y las llaves secretas para JWT.
+4. **Aplica las migraciones de base de datos (si aplica):**
    ```bash
    cd src/AuthService.Persistence
    dotnet ef database update --startup-project ../AuthService.Api
    ```
-5. **Run the application:**
+5. **Ejecuta la aplicación:**
    ```bash
    cd ../AuthService.Api
    dotnet run
    ```
-6. **Access Swagger UI:**
-   Navigate to `https://localhost:<port>/swagger` or `http://localhost:<port>/swagger` in your browser to test the endpoints interactively.
+6. **Accede a la interfaz de Swagger:**
+   Navega a `https://localhost:<puerto>/swagger` o `http://localhost:<puerto>/swagger` en tu navegador para probar los endpoints interactivamente.
