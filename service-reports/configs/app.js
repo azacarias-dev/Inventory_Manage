@@ -24,7 +24,7 @@ const routes = (app) => {
 
 const initServer = async (app) => {
     app = express();
-    const PORT = process.env.PORT || 3003;
+    const PORT = process.env.PORT || 3001;
 
     try {
         dbConnection();

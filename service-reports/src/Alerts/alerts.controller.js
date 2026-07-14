@@ -60,3 +60,78 @@ export const getLowStockAlerts = async (req, res) => {
         });
     }
 };
+
+export const getOutOfStockAlerts = async (req, res) => {
+    try {
+        let products = [];
+
+        // Si estamos en desarrollo y el Servicio A no está disponible, usar mock
+        if (process.env.NODE_ENV === 'development') {
+            try {
+                const token = req.headers.authorization?.split(' ')[1];
+                const response = await axios.get(`${SERVICE_A_URL}/products`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    timeout: 2000
+                });
+                products = response.data.productos || [];
+            } catch (error) {
+                console.log('⚠️  Servicio A no disponible, usando datos mock...');
+                products = getMockProducts();
+            }
+        } else {
+            const token = req.headers.authorization?.split(' ')[1];
+            const response = await axios.get(`${SERVICE_A_URL}/products`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            products = response.data.productos || [];
+        }
+
+        // Filtrar productos agotados (existencia === 0)
+        const outOfStockProducts = products.filter(product => product.existencia === 0);
+
+        if (outOfStockProducts.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'No hay productos agotados',
+                alerts: []
+            });
+        }
+
+        // Procesar y retornar las alertas
+        const alerts = outOfStockProducts.map(product => ({
+            productId: product._id,
+            name: product.nombre,
+            category: product.categoría,
+            currentStock: product.existencia,
+            price: product.precio,
+            alertLevel: 'OUT_OF_STOCK',
+            severity: 'CRITICAL'
+        }));
+
+        res.status(200).json({
+            success: true,
+            total: alerts.length,
+            alerts
+        });
+
+    } catch (error) {
+        console.error('Error en getOutOfStockAlerts:', error.message);
+        
+        if (error.response?.status === 401) {
+            return res.status(401).json({
+                success: false,
+                message: 'Token inválido o expirado'
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener alertas de productos agotados',
+            error: error.message
+        });
+    }
+};
