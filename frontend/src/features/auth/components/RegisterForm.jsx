@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { useAuthStore } from '../store/authStore';
 
-export default function RegisterForm({ onSwitchToLogin }) {
+export default function RegisterForm({ onSwitchToLogin, onLogin }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [fullName, setFullName] = useState('');
@@ -8,6 +9,15 @@ export default function RegisterForm({ onSwitchToLogin }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeTerms, setAgreeTerms] = useState(false);
+
+  const [localError, setLocalError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const register = useAuthStore((state) => state.register);
+  const storeError = useAuthStore((state) => state.error);
+  const loading = useAuthStore((state) => state.loading);
+
+  const error = localError || storeError;
 
   // Estados visuales de interacción (para que se sienta vivo y premium)
   const [focusedField, setFocusedField] = useState('');
@@ -25,9 +35,28 @@ export default function RegisterForm({ onSwitchToLogin }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // No hace nada funcional, solo simulación visual
+    setLocalError('');
+    setSuccessMessage('');
+
+    if (password !== confirmPassword) {
+      setLocalError('Las contraseñas no coinciden');
+      return;
+    }
+
+    if (!agreeTerms) {
+      setLocalError('Debes aceptar los Términos de Servicio y la Política de Privacidad');
+      return;
+    }
+
+    const result = await register(fullName, email, password);
+    if (result.success) {
+      setSuccessMessage('¡Cuenta creada exitosamente! Redirigiendo al login...');
+      setTimeout(() => {
+        if (onSwitchToLogin) onSwitchToLogin();
+      }, 2000);
+    }
   };
 
   return (
@@ -186,9 +215,21 @@ export default function RegisterForm({ onSwitchToLogin }) {
           </label>
         </div>
 
+        {error && (
+          <div className="alert-message error-bg" style={{ marginBottom: '1.25rem', color: '#ffffff' }}>
+            ⚠️ {error}
+          </div>
+        )}
+
+        {successMessage && (
+          <div className="alert-message" style={{ marginBottom: '1.25rem', backgroundColor: '#16a34a', color: '#ffffff' }}>
+            ✅ {successMessage}
+          </div>
+        )}
+
         {/* Botón de Enviar */}
-        <button type="submit" className="auth-btn btn-primary">
-          Registrar Cuenta
+        <button type="submit" className="auth-btn btn-primary" disabled={loading}>
+          {loading ? 'Creando Cuenta...' : 'Registrar Cuenta'}
         </button>
       </form>
 
