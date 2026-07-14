@@ -19,7 +19,7 @@ public class UserManagementService(IUserRepository users, IRoleRepository roles)
 
         var user = await users.GetByIdAsync(userId);
 
-        var isUserAdmin = user.UserRoles.Any(r => r.Role.Name == RoleConstants.ADMIN_ROLE);
+        var isUserAdmin = user.UserRole.Any(r => r.Role.Name == RoleConstants.ADMIN_ROLE);
         if (isUserAdmin && roleName != RoleConstants.ADMIN_ROLE)
         {
             var adminCount = await roles.CountUsersInRoleAsync(RoleConstants.ADMIN_ROLE);
@@ -40,14 +40,8 @@ public class UserManagementService(IUserRepository users, IRoleRepository roles)
         return new UserResponseDto
         {
             Id = user.Id,
-            Name = user.Name,
+            UserName = user.Username,
             Email = user.Email,
-            Address = user.Address,
-            Phone = user.Phone,
-            Dpi = user.Dpi,
-            JobName = user.JobName,
-            MonthlyIncome = user.MonthlyIncome,
-            Birthdate = user.Birthdate,
             Role = role.Name,
             IsActive = user.IsActive,
             IsEmailVerified = user.UserEmail?.EmailVerified ?? false,
@@ -69,14 +63,8 @@ public class UserManagementService(IUserRepository users, IRoleRepository roles)
         return usersInRole.Select(u => new UserResponseDto
         {
             Id = u.Id,
-            Name = u.Name,
+            UserName = u.Username,
             Email = u.Email,
-            Address = u.Address,
-            Phone = u.Phone,
-            Dpi = u.Dpi,
-            JobName = u.JobName,
-            MonthlyIncome = u.MonthlyIncome,
-            Birthdate = u.Birthdate,
             Role = roleName,
             IsActive = u.IsActive,
             IsEmailVerified = u.UserEmail?.EmailVerified ?? false,
@@ -91,14 +79,8 @@ public class UserManagementService(IUserRepository users, IRoleRepository roles)
         return admins.Select(u => new UserResponseDto
         {
             Id = u.Id,
-            Name = u.Name,
+            UserName = u.Username,
             Email = u.Email,
-            Address = u.Address,
-            Phone = u.Phone,
-            Dpi = u.Dpi,
-            JobName = u.JobName,
-            MonthlyIncome = u.MonthlyIncome,
-            Birthdate = u.Birthdate,
             Role = RoleConstants.ADMIN_ROLE,
             IsActive = u.IsActive,
             IsEmailVerified = u.UserEmail?.EmailVerified ?? false,
@@ -113,14 +95,8 @@ public class UserManagementService(IUserRepository users, IRoleRepository roles)
         return usuarios.Select(u => new UserResponseDto
         {
             Id = u.Id,
-            Name = u.Name,
+            UserName = u.Username,
             Email = u.Email,
-            Address = u.Address,
-            Phone = u.Phone,
-            Dpi = u.Dpi,
-            JobName = u.JobName,
-            MonthlyIncome = u.MonthlyIncome,
-            Birthdate = u.Birthdate,
             Role = RoleConstants.USER_ROLE,
             IsActive = u.IsActive,
             IsEmailVerified = u.UserEmail?.EmailVerified ?? false,
@@ -134,14 +110,8 @@ public class UserManagementService(IUserRepository users, IRoleRepository roles)
         return new UserResponseDto
         {
             Id = u.Id,
-            Name = u.Name,
+            UserName = u.Username,
             Email = u.Email,
-            Address = u.Address,
-            Phone = u.Phone,
-            Dpi = u.Dpi,
-            JobName = u.JobName,
-            MonthlyIncome = u.MonthlyIncome,
-            Birthdate = u.Birthdate,
             Role = roleName,
             IsActive = u.IsActive,
             IsEmailVerified = u.UserEmail?.EmailVerified ?? false,

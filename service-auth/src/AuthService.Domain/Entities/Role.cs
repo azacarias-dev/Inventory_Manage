@@ -16,5 +16,5 @@ public class Role
 
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-
+    public ICollection<UserRole> UserRole { get; set; }
 }

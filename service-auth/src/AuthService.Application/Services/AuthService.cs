@@ -50,15 +50,9 @@ public class AuthService(
         var user = new User
         {
             Id = userId,
-            Name = registerDto.Name,
+            Username = registerDto.UserName,
             Email = registerDto.Email.ToLowerInvariant(),
-            Address = registerDto.Address,
-            Phone = registerDto.Phone,
             Password = passwordHashService.HashPassword(registerDto.Password),
-            Dpi = registerDto.Dpi,
-            JobName = registerDto.JobName,
-            MonthlyIncome = registerDto.MonthlyIncome,
-            Birthdate = registerDto.Birthdate,
             IsActive = false,
             UserEmail = new UserEmail
             {
@@ -68,7 +62,7 @@ public class AuthService(
                 EmailVerificationToken = emailVerificationToken,
                 EmailVerificationTokenExpiry = DateTime.UtcNow.AddHours(24)
             },
-            UserRoles =
+            UserRole =
             [
                 new Domain.Entities.UserRole
                 {
@@ -82,14 +76,14 @@ public class AuthService(
         // Guardar usuario y entidades relacionadas
         var createdUser = await userRepository.CreateAsync(user);
 
-        logger.LogUserRegistered(createdUser.Name);
+        logger.LogUserRegistered(createdUser.Username);
 
         // Enviar email de verificación en background
         _ = Task.Run(async () =>
         {
             try
             {
-                await emailService.SendEmailVerificationAsync(createdUser.Email, createdUser.Name, emailVerificationToken);
+                await emailService.SendEmailVerificationAsync(createdUser.Email, createdUser.Username, emailVerificationToken);
                 logger.LogInformation("Verification email sent");
             }
             catch (Exception ex)
@@ -164,13 +158,12 @@ public class AuthService(
 
     private UserResponseDto MapToUserResponseDto(User user)
     {
-        var userRole = user.UserRoles.FirstOrDefault()?.Role?.Name ?? RoleConstants.USER_ROLE;
+        var userRole = user.UserRole.FirstOrDefault()?.Role?.Name ?? RoleConstants.USER_ROLE;
         return new UserResponseDto
         {
             Id = user.Id,
-            Name = user.Name,
+            UserName = user.Username,
             Email = user.Email,
-            Phone = user.Phone,
             Role = userRole,
             IsActive = user.IsActive,
             IsEmailVerified = user.UserEmail?.EmailVerified ?? false,
@@ -184,8 +177,8 @@ public class AuthService(
         return new UserDetailsDto
         {
             Id = user.Id,
-            Name = user.Name,
-            Role = user.UserRoles.FirstOrDefault()?.Role?.Name ?? RoleConstants.USER_ROLE
+            Name = user.Username,
+            Role = user.UserRole.FirstOrDefault()?.Role?.Name ?? RoleConstants.USER_ROLE
         };
     }
 
@@ -211,14 +204,14 @@ public class AuthService(
         // Enviar email de bienvenida
         try
         {
-            await emailService.SendWelcomeEmailAsync(user.Email, user.Name);
+            await emailService.SendWelcomeEmailAsync(user.Email, user.Username);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to send welcome email to {Email}", user.Email);
         }
 
-        logger.LogInformation("Email verified successfully for user {Name}", user.Name);
+        logger.LogInformation("Email verified successfully for user {Username}", user.Username);
 
         return new EmailResponseDto
         {
@@ -229,142 +222,6 @@ public class AuthService(
                 email = user.Email,
                 verified = true
             }
-        };
-    }
-
-    public async Task<EmailResponseDto> ResendVerificationEmailAsync(ResendVerificationDto resendDto)
-    {
-        var user = await userRepository.GetByEmailAsync(resendDto.Email);
-        if (user == null || user.UserEmail == null)
-        {
-            return new EmailResponseDto
-            {
-                Success = false,
-                Message = "Usuario no encontrado",
-                Data = new { email = resendDto.Email, sent = false }
-            };
-        }
-
-        if (user.UserEmail.EmailVerified)
-        {
-            return new EmailResponseDto
-            {
-                Success = false,
-                Message = "El email ya ha sido verificado",
-                Data = new { email = user.Email, verified = true }
-            };
-        }
-
-        // Generar nuevo token
-        var newToken = TokenGenerator.GenerateEmailVerificationToken();
-        user.UserEmail.EmailVerificationToken = newToken;
-        user.UserEmail.EmailVerificationTokenExpiry = DateTime.UtcNow.AddHours(24);
-
-        await userRepository.UpdateAsync(user);
-
-        // Enviar email
-        try
-        {
-            await emailService.SendEmailVerificationAsync(user.Email, user.Name, newToken);
-            return new EmailResponseDto
-            {
-                Success = true,
-                Message = "Email de verificación enviado exitosamente",
-                Data = new { email = user.Email, sent = true }
-            };
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to resend verification email to {Email}", user.Email);
-            return new EmailResponseDto
-            {
-                Success = false,
-                Message = "Error al enviar el email de verificación",
-                Data = new { email = user.Email, sent = false }
-            };
-        }
-    }
-
-    public async Task<EmailResponseDto> ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto)
-    {
-        var user = await userRepository.GetByEmailAsync(forgotPasswordDto.Email);
-        if (user == null)
-        {
-            // Por seguridad, siempre devolvemos éxito aunque el usuario no exista
-            return new EmailResponseDto
-            {
-                Success = true,
-                Message = "Si el email existe, se ha enviado un enlace de recuperación",
-                Data = new { email = forgotPasswordDto.Email, initiated = true }
-            };
-        }
-
-        // Generar token de reset
-        var resetToken = TokenGenerator.GeneratePasswordResetToken();
-
-        if (user.UserPasswordReset == null)
-        {
-            user.UserPasswordReset = new UserPasswordReset
-            {
-                UserId = user.Id,
-                PasswordResetToken = resetToken,
-                PasswordResetTokenExpiry = DateTime.UtcNow.AddHours(1)
-            };
-        }
-        else
-        {
-            user.UserPasswordReset.PasswordResetToken = resetToken;
-            user.UserPasswordReset.PasswordResetTokenExpiry = DateTime.UtcNow.AddHours(1); // 1 hora para resetear
-        }
-
-        await userRepository.UpdateAsync(user);
-
-        // Enviar email
-        try
-        {
-            await emailService.SendPasswordResetAsync(user.Email, user.Name, resetToken);
-            logger.LogInformation("Password reset email sent to {Email}", user.Email);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to send password reset email to {Email}", user.Email);
-        }
-
-        return new EmailResponseDto
-        {
-            Success = true,
-            Message = "Si el email existe, se ha enviado un enlace de recuperación",
-            Data = new { email = forgotPasswordDto.Email, initiated = true }
-        };
-    }
-
-    public async Task<EmailResponseDto> ResetPasswordAsync(ResetPasswordDto resetPasswordDto)
-    {
-        var user = await userRepository.GetByPasswordResetTokenAsync(resetPasswordDto.Token);
-        if (user == null || user.UserPasswordReset == null)
-        {
-            return new EmailResponseDto
-            {
-                Success = false,
-                Message = "Token de reset inválido o expirado",
-                Data = new { token = resetPasswordDto.Token, reset = false }
-            };
-        }
-
-        // Actualizar contraseña
-        user.Password = passwordHashService.HashPassword(resetPasswordDto.NewPassword);
-        user.UserPasswordReset.PasswordResetToken = null;
-        user.UserPasswordReset.PasswordResetTokenExpiry = null;
-
-        await userRepository.UpdateAsync(user);
-
-        logger.LogInformation("Password reset successfully for user {Name}", user.Name);
-
-        return new EmailResponseDto
-        {
-            Success = true,
-            Message = "Contraseña actualizada exitosamente",
-            Data = new { email = user.Email, reset = true }
         };
     }
 

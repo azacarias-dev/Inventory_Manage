@@ -22,7 +22,7 @@ public class JwtTokenService(IConfiguration configuration) : IJwtTokenService
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         // Get user's role (assumes single role per user)
-        var role = user.UserRoles?.FirstOrDefault()?.Role?.Name ?? "USER_ROLE";
+        var role = user.UserRole?.FirstOrDefault()?.Role?.Name ?? "USER_ROLE";
 
         var claims = new[]
         {
