@@ -1,0 +1,3 @@
+# Ignore appsettings.json file to prevent sensitive information from being committed to version control
+
+appsettings.json
