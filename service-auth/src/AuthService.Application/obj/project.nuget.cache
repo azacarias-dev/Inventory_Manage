@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "WDvBQ2Q7/Vw=",
+  "dgSpecHash": "PTNwjyJUl9M=",
   "success": true,
   "projectFilePath": "C:\\Users\\Informatica\\Documents\\2024007\\Inventory_Manage\\service-auth\\src\\AuthService.Application\\AuthService.Application.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Informatica\\.nuget\\packages\\system.componentmodel.annotations\\5.0.0\\system.componentmodel.annotations.5.0.0.nupkg.sha512"
+  ],
   "logs": []
 }
